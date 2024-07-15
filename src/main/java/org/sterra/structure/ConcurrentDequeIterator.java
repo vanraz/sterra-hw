@@ -26,11 +26,9 @@ public class ConcurrentDequeIterator implements ListIterator<Integer> {
     @Override
     public Integer next() {
         if (!hasNext()) {
-            log("No Next => From start %d. From finish %d", leftIdx.get(), rightIdx.get());
             return null;
         }
-        int nextCount = leftIdx.incrementAndGet();
-        log("Next idx %d", nextCount);
+        leftIdx.incrementAndGet();
         return forwardIterator.next();
     }
 
@@ -42,23 +40,20 @@ public class ConcurrentDequeIterator implements ListIterator<Integer> {
     @Override
     public Integer previous() {
         if (!hasPrevious()) {
-            log("No Prev => From start %d. From finish %d", leftIdx.get(), rightIdx.get());
             return null;
         }
-        int prevIdx = rightIdx.decrementAndGet();
-        var prev = reverseIterator.next();
-        log("Prev idx %d", prevIdx);
-        return prev;
+        rightIdx.decrementAndGet();
+        return reverseIterator.next();
     }
 
     @Override
     public int nextIndex() {
-        return hasNext() ? leftIdx.get() + 1 : leftIdx.get();
+        return leftIdx.get();
     }
 
     @Override
     public int previousIndex() {
-        return hasPrevious() ? rightIdx.get() - 1 : rightIdx.get();
+        return rightIdx.get();
     }
 
     @Override
@@ -79,9 +74,5 @@ public class ConcurrentDequeIterator implements ListIterator<Integer> {
     @Override
     public String toString() {
         return String.format("Current start pos '%d' and finish pos '%d'", leftIdx.get(), rightIdx.get());
-    }
-
-    private void log(String template, Object... args) {
-        System.out.println("[" + Thread.currentThread().getName() + "] " + String.format(template, args));
     }
 }
