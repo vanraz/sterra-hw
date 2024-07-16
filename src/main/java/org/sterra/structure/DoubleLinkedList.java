@@ -3,7 +3,7 @@ package org.sterra.structure;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class DoubleLinkedList<T> implements Iterable<T> {
+public class DoubleLinkedList<T> implements ReverseIterable<T> {
 
     private Node<T> head;
     private Node<T> tail;
@@ -41,6 +41,7 @@ public class DoubleLinkedList<T> implements Iterable<T> {
         return new ForwardIterator();
     }
 
+    @Override
     public Iterator<T> reverse() {
         return new ReverseIterator();
     }

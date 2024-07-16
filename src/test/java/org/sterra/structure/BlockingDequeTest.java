@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-class ConcurrentDequeIteratorTest {
+public class BlockingDequeTest {
 
     private final Logger logger = LogManager.getLogger();
 
@@ -34,11 +34,12 @@ class ConcurrentDequeIteratorTest {
     }
 
     @Test
-    void testIterateByTwoThreads() {
-        var iterator = new LoggingListIteratorProxy<>(new ConcurrentDequeIterator(linkedList));
-        var countZeros = new CountingBitWorker(() -> iterator.hasNext() ? iterator.next() : null, new ZeroBitsCounter());
+    void testBlockingDeque() {
+        var deque = new BlockingDeque<>(linkedList);
+
+        var countZeros = new CountingBitWorker(deque::pollFirst, new ZeroBitsCounter());
         var countOnes = new CountingBitWorker(
-                () -> iterator.hasPrevious() ? iterator.previous() : null, ZeroBitsCounter.nonZeroBitsCounter);
+                deque::pollLast, ZeroBitsCounter.nonZeroBitsCounter);
         try (var executorService = Executors.newFixedThreadPool(2)) {
             CompletableFuture.allOf(
                     CompletableFuture.runAsync(countZeros, executorService),
